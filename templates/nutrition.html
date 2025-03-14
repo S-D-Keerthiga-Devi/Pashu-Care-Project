@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Nutrition Assistant</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+
+<body class="bg-gradient-to-tr from-orange-50 to-orange-100 flex justify-center items-center min-h-screen p-6">
+    <div class="max-w-lg w-full bg-white shadow-lg rounded-lg p-6 border border-orange-300 mt-10 mb-10">
+        <h2 class="text-3xl font-extrabold text-center text-orange-800 mb-4">Upload Pet and Their Food Details</h2>
+        <p class="text-lg text-center text-orange-700 mb-4">Please upload a clear image of the pet food so we can assist
+            better.</p>
+
+        <!-- Dropdown for Breed -->
+        <div class="relative mb-4">
+            <button id="breedDropdownButton"
+                class="w-full bg-orange-600 text-white py-2 rounded-lg hover:bg-orange-700 transition font-medium text-sm px-5 flex justify-between items-center"
+                type="button">
+                Select Breed
+                <svg class="w-4 h-4" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none"
+                    viewBox="0 0 10 6">
+                    <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="m1 1 4 4 4-4" />
+                </svg>
+            </button>
+
+            <!-- Dropdown Menu -->
+            <div id="breedDropdown"
+                class="absolute left-0 w-full mt-2 bg-white border border-gray-200 rounded-lg shadow-md hidden z-10">
+                <ul class="py-2 text-sm text-gray-700">
+                    <li><a href="#" class="block px-4 py-2 hover:bg-gray-100" onclick="selectBreed('Cat')">Cat</a></li>
+                    <li><a href="#" class="block px-4 py-2 hover:bg-gray-100" onclick="selectBreed('Dog')">Dog</a></li>
+                    <li><a href="#" class="block px-4 py-2 hover:bg-gray-100" onclick="selectBreed('Rabbit')">Rabbit</a>
+                    </li>
+                    <li><a href="#" class="block px-4 py-2 hover:bg-gray-100" onclick="showOtherInput()">Other</a></li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- Other breed input field (hidden by default) -->
+        <input type="text" id="otherBreedInput" placeholder="Enter breed"
+            class="w-full p-2 border border-gray-300 rounded-lg hidden" oninput="updateBreedText()" />
+
+        <!-- Age input -->
+        <div class="relative mb-4">
+            <button id="AgeButton"
+                class="w-full bg-orange-600 text-white py-2 rounded-lg hover:bg-orange-700 transition font-medium text-sm px-5 flex justify-between items-center"
+                type="button">
+                Enter Age
+            </button>
+            <input type="number" id="ageInput" class="hidden w-full p-2 border border-gray-300 rounded-lg"
+                placeholder="Enter Age (in years)" />
+        </div>
+
+        <!-- Weight input -->
+        <div class="relative mb-4">
+            <button id="WeightButton"
+                class="w-full bg-orange-600 text-white py-2 rounded-lg hover:bg-orange-700 transition font-medium text-sm px-5 flex justify-between items-center"
+                type="button">
+                Enter Weight
+            </button>
+            <input type="number" id="WeightInput" class="hidden w-full p-2 border border-gray-300 rounded-lg"
+                placeholder="Enter Weight (in kg)" />
+        </div>
+
+        <!-- Health Conditions Button -->
+        <button id="healthDropdownButton"
+            class="w-full bg-orange-600 text-white py-2 rounded-lg hover:bg-orange-700 transition font-medium text-sm px-5 flex justify-between items-center"
+            type="button">
+            Select Health Condition
+            <svg class="w-4 h-4 ml-2" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 10 6">
+                <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                    d="m1 1 4 4 4-4" />
+            </svg>
+        </button>
+
+        <!-- Health Conditions Dropdown -->
+        <div id="healthDropdown"
+            class="absolute w-400 mt-2 bg-white border border-gray-200 rounded-lg shadow-md hidden z-10 justify-between items-center">
+            <ul class="p-3 space-y-1 text-sm text-gray-700">
+                <li>
+                    <label class="flex items-center p-2 rounded-sm hover:bg-gray-100">
+                        <input type="checkbox"
+                            class="health-checkbox w-4 h-4 text-orange-600 border-gray-300 rounded-sm" value="Obesity">
+                        <span class="ml-2 text-gray-900">Obesity</span>
+                    </label>
+                </li>
+                <li>
+                    <label class="flex items-center p-2 rounded-sm hover:bg-gray-100">
+                        <input type="checkbox"
+                            class="health-checkbox w-4 h-4 text-orange-600 border-gray-300 rounded-sm" value="Diabetes">
+                        <span class="ml-2 text-gray-900">Diabetes</span>
+                    </label>
+                </li>
+                <li>
+                    <label class="flex items-center p-2 rounded-sm hover:bg-gray-100">
+                        <input type="checkbox"
+                            class="health-checkbox w-4 h-4 text-orange-600 border-gray-300 rounded-sm"
+                            value="Kidney Issues">
+                        <span class="ml-2 text-gray-900">Kidney Issues</span>
+                    </label>
+                </li>
+                <li>
+                    <label class="flex items-center p-2 rounded-sm hover:bg-gray-100">
+                        <input type="checkbox"
+                            class="health-checkbox w-4 h-4 text-orange-600 border-gray-300 rounded-sm"
+                            value="Allergies">
+                        <span class="ml-2 text-gray-900">Allergies</span>
+                    </label>
+                </li>
+                <li>
+                    <label class="flex items-center p-2 rounded-sm hover:bg-gray-100">
+                        <input id="otherHealthCheckbox" type="checkbox"
+                            class="health-checkbox w-4 h-4 text-orange-600 border-gray-300 rounded-sm">
+                        <span class="ml-2 text-gray-900">Other</span>
+                    </label>
+                </li>
+            </ul>
+        </div>
+
+        <!-- Other Health Condition Input -->
+        <input type="text" id="otherHealthInput" placeholder="Enter health condition"
+            class="w-full p-2 border border-gray-300 rounded-lg hidden" />
+
+        <!-- Display Selected Health Conditions -->
+        <div id="selectedHealthConditions" class="text-sm text-orange-800 font-semibold mt-2 hidden">
+            Selected Conditions: <span id="healthConditionList"></span>
+        </div>
+
+        <form id="upload-form" enctype="multipart/form-data" class="space-y-4">
+            <form id="upload-form" enctype="multipart/form-data" class="space-y-4 mx-auto max-w-md">
+                <!-- File Upload -->
+                <label for="file-upload"
+                    class="flex flex-col items-center justify-center w-full h-48 border-2 border-dashed border-orange-400 rounded-lg cursor-pointer bg-orange-50 hover:bg-orange-200 transition p-4 mt-10">
+                    <div class="flex flex-col items-center">
+                        <svg class="w-12 h-12 text-orange-600 mb-2" xmlns="http://www.w3.org/2000/svg" fill="none"
+                            viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m-7-7h14m0 0l-3-3m3 3l-3 3" />
+                        </svg>
+                        <p class="text-lg text-orange-700 font-medium text-center">Click to upload or drag & drop</p>
+                        <p class="text-sm text-orange-500 text-center">PNG, JPG, or GIF (MAX. 800x400px)</p>
+                        <p id="file-name" class="text-sm text-green-600 font-semibold hidden mt-2"></p>
+                    </div>
+                    <input id="file-upload" type="file" name="file" class="hidden" accept="image/png, image/jpeg, image/gif" />
+                </label>
+            
+                <!-- Loading Indicator -->
+                <div id="loading" class="hidden flex justify-center">
+                    <svg class="w-8 h-8 animate-spin text-orange-600" xmlns="http://www.w3.org/2000/svg" fill="none"
+                        viewBox="0 0 24 24" stroke="currentColor">
+                        <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                        <path class="opacity-75" fill="currentColor"
+                            d="M4 12a8 8 0 018-8v8H4z"></path>
+                    </svg>
+                </div>
+            
+            </form>
+
+            <button onclick="CurrentDietAnalysis(event)" type="submit" class="w-full bg-orange-600 text-white py-2 rounded-lg hover:bg-orange-700 transition mt-5">
+                Current Diet Analysis
+            </button>
+            <button onclick="PlanYourDiet(event)"  type="submit" class="w-full bg-orange-600 text-white py-2 rounded-lg hover:bg-orange-700 transition mt-5">
+                Plan the pet's Diet
+            </button>
+
+            <div id="loading" class="text-center hidden">
+                <p class="text-orange-600 font-semibold">Analyzing Image...</p>
+                <div class="animate-spin rounded-full h-6 w-6 border-t-2 border-orange-600 mx-auto"></div>
+            </div>
+
+            <h2 class="text-2xl font-bold text-orange-800 mt-4">AI Analysis</h2>
+            <div id="response_text"
+                class="text-orange-900 bg-orange-50 p-4 rounded-lg h-64 overflow-y-auto border border-orange-300 text-lg leading-relaxed">
+            </div>
+        </form>
+        
+    </div>
+    <script src="{{ url_for('static', filename='script.js') }}"></script>
+</body>
+
+</html>

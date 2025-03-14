@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Assistant</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+
+<body class="bg-gradient-to-tr from-orange-50 to-orange-100 flex justify-center items-center h-screen">
+
+    <div class="max-w-lg w-full bg-white shadow-lg rounded-lg p-6 border border-orange-300">
+        <h2 class="text-3xl font-extrabold text-center text-orange-800 mb-4">Upload Injured Pet Image</h2>
+        <p class="text-lg text-center text-orange-700 mb-4">Please upload a clear image of the injured pet so we can
+            assist better.</p>
+
+        <form id="upload-form" enctype="multipart/form-data" class="space-y-4">
+            <label for="file-upload" id="dropzone-file"
+                class="flex flex-col items-center justify-center w-full h-48 border-2 border-dashed border-orange-400 rounded-lg cursor-pointer bg-orange-50 hover:bg-orange-200 transition p-4">
+                <div class="flex flex-col items-center">
+                    <svg class="w-12 h-12 text-orange-600 mb-2" xmlns="http://www.w3.org/2000/svg" fill="none"
+                        viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m-7-7h14m0 0l-3-3m3 3l-3 3" />
+                    </svg>
+                    <p class="text-lg text-orange-700 font-medium">Click to upload or drag & drop</p>
+                    <p class="text-sm text-orange-500">PNG, JPG, or GIF (MAX. 800x400px)</p>
+                </div>
+                <input id="file-upload" type="file" name="file" class="hidden"
+                    accept="image/png, image/jpeg, image/gif" />
+            </label>
+
+            <p id="file-status" class="text-center text-green-600 font-semibold hidden">File Uploaded Successfully!</p>
+
+            <button type="submit"
+                class="w-full bg-orange-600 text-white py-2 rounded-lg hover:bg-orange-700 transition">
+                Upload Image
+            </button>
+
+            <div id="loading" class="text-center hidden">
+                <p class="text-orange-600 font-semibold">Analyzing Image...</p>
+                <div class="animate-spin rounded-full h-6 w-6 border-t-2 border-orange-600 mx-auto"></div>
+            </div>
+
+            <h2 class="text-2xl font-bold text-orange-800 mt-4">AI Analysis</h2>
+            <div id="response_text"
+                class="text-orange-900 bg-orange-50 p-4 rounded-lg h-64 overflow-y-auto border border-orange-300 text-lg leading-relaxed">
+            </div>
+
+        </form>
+    </div>
+
+    <script>
+        document.getElementById("upload-form").addEventListener("submit", async function (event) {
+            event.preventDefault();
+
+            const fileInput = document.getElementById("file-upload");
+            const uploadedFile = fileInput.files[0];
+
+            if (!uploadedFile) {
+                alert("Please upload an image of the injured pet.");
+                return;
+            }
+
+            document.getElementById("file-status").classList.remove("hidden");
+            document.getElementById("loading").classList.remove("hidden");
+            document.getElementById("response_text").innerHTML = "";
+
+            const formData = new FormData();
+            formData.append("file", uploadedFile);
+
+            try {
+                const response = await fetch('/AI_assistant', {
+                    method: "POST",
+                    body: formData
+                });
+
+                const data = await response.json();
+                document.getElementById("response_text").innerHTML = formatAIResponse(data.response);
+            } catch (error) {
+                console.error("Error:", error);
+                document.getElementById("response_text").innerHTML = "Error analyzing the image.";
+            } finally {
+                document.getElementById("loading").classList.add("hidden");
+            }
+        });
+
+        function formatAIResponse(responseText) {
+            return responseText
+                .replace(/<h1>/g, '<h1 class="text-2xl font-bold text-orange-700 mt-2">')
+                .replace(/<h2>/g, '<h2 class="text-xl font-semibold text-orange-600 mt-2">')
+                .replace(/<h3>/g, '<h3 class="text-lg font-medium text-orange-500 mt-2">')
+                .replace(/<p>/g, '<p class="text-md text-orange-900 mt-1">');
+        }
+    </script>
+
+</body>
+
+</html>
