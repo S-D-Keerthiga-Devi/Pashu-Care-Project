@@ -4,6 +4,12 @@ import google.generativeai as genai
 import os
 from PIL import Image
 import re
+from flask_cors import CORS
+from flask import Blueprint, request, jsonify
+from flask_cors import cross_origin  # Use cross_origin for Blueprints
+import groq
+from dotenv import load_dotenv
+
 
 # Load environment variables
 load_dotenv()
@@ -13,6 +19,12 @@ genai.configure(api_key=os.getenv("GOOGLE_API_KEY"))
 
 # Initialize Flask app
 app = Flask(__name__)
+CORS(app)
+
+from flask_cors import CORS
+
+app = Flask(__name__)
+CORS(app, resources={r"/chat": {"origins": "*"}})  # Enable CORS for /chat route
 
 @app.route('/')
 def home():
@@ -324,6 +336,41 @@ def clean_html_response(response_text):
     response_text = re.sub(r'```', '', response_text)
 
     return response_text.strip()
+
+api_key = os.getenv("GROQ_API_KEY")
+if not api_key:
+    raise ValueError("❌ GROQ_API_KEY is missing from environment variables.")
+
+# Initialize Groq Client
+groq_client = groq.Client(api_key=api_key)
+
+def get_helpline_response(user_query):
+    try:
+        response = groq_client.chat.completions.create(
+            model="llama3-8b-8192",
+            messages=[{"role": "user", "content": user_query}],
+        )
+        return response.choices[0].message.content
+    except Exception as e:
+        print(f"🔥 ERROR: {e}")
+        return f"Error: {str(e)}"
+
+# Chatbot route inside chatbot_bp
+@app.route("/chat", methods=["POST"])
+def chat():
+    try:
+        data = request.get_json()
+        if not data or "message" not in data:
+            return jsonify({"error": "Invalid or missing 'message' field"}), 400
+
+        user_query = data["message"].strip()
+        bot_response = get_helpline_response(user_query)
+
+        return jsonify({"response": bot_response})
+
+    except Exception as e:
+        print(f"🔥 ERROR: {e}")
+        return jsonify({"error": str(e)}), 500
 
 if __name__ == "__main__":
     app.run(debug=True)
